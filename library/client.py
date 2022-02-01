@@ -1,167 +1,160 @@
-import tkinter as tk
-from tkinter import ttk
-from database import Database
+from tkinter import BOTTOM, Tk, Frame, Label, Button, Menu, Entry, W, TOP, CENTER, LEFT, END, Tk, Toplevel, mainloop
+from tkinter.ttk import Treeview
 
-class Subwindow(tk.Toplevel):
-    def __init__(self, table_name: str, database: object, treeview: object, *ar, **kw) -> None:
-        super().__init__(*ar, *kw)
-        self.table_name: str = table_name
+class AddWindow(Toplevel):
+    """
+        Take instance of treeview (one db table), name of the table and columns 
+        and build an winow to add an item to specified by "table_name" table. 
+    """
+    def __init__(self, database: object, treeview: Treeview, table_name: str, columns: list) -> None:
+        Toplevel.__init__(self)
         self.db: object = database
-        self.columns: list = self.db.fetch_values(table_name)
-        self.tv: object = treeview
-        self.build_subwindow()
+        self.tv: Treeview = treeview
+        self.table_name: str = table_name
+        self.columns: list = columns
+        self.build_window()
 
-    def build_subwindow(self) -> None:
-        main_frame = tk.Frame(master=self)
-        entries = [tk.Entry(master=main_frame) for _ in range(len(self.columns))]
-        frm_button = tk.Frame(master=main_frame)
+    """
+        Build an *add to db* window, 
+        disable id and created_at entries. 
+    """
+    def build_window(self) -> None:
+        frame = Frame(master=self)
+        entries = [Entry(master=frame) for _ in range(len(self.columns))]
+        frame_buttons = Frame(master=frame)
         for column in range(len(self.columns)):
-            lbl_column = tk.Label(master=main_frame, text=self.columns[column])
-            lbl_entry = entries[column]
-            lbl_column.pack(side=tk.TOP)
-            lbl_entry.pack(side=tk.TOP)
-        btn_save = tk.Button(master=frm_button, text="Save", command = lambda: self.save(entries))
-        btn_cancel = tk.Button(master=frm_button, text="Cancel", command = lambda: self.close())
-        btn_save.pack(side=tk.LEFT)
-        btn_cancel.pack(side=tk.LEFT)
-        frm_button.pack(side=tk.TOP, pady=5)
-        main_frame.pack()
+            lbl_column = Label(master=frame, text=self.columns[column].upper())
+            entry = entries[column]
+            self.fill_entries(entry, column)
+            if self.columns[column] == "id" or self.columns[column] == "created_at":
+                entry.config(state = "disabled")
+            lbl_column.pack(side=TOP)
+            entry.pack(side=TOP)
+        btn_save = Button(master=frame_buttons, text="Save", command = lambda: self.save(entries))
+        btn_cancel = Button(master=frame_buttons, text="Cancel", command = lambda: self.close())
+        btn_save.pack(side=LEFT)
+        btn_cancel.pack(side=LEFT)
+        frame_buttons.pack(side=TOP, pady=5)
+        frame.pack()
+
+    def fill_entries(self, entry: object, column: int) -> None: ...
+
+    """
+        Delete all treeview children and then rebuild it with updated database.
+    """
+    def reload(self) -> None:
+        for child in self.tv.get_children():
+            self.tv.delete(child)
+        for column in self.tv["columns"]:
+            self.tv.heading(column, text=column.upper(), anchor=CENTER)
+        for row in self.db.fetch_table(self.table_name):
+            self.tv.insert('', END, values=row)
+        print(f"Reloaded table {self.table_name}")
+
+    """
+        Get values from enteries, put them in a dictionary, 
+        call database.add_row and reload whole tree.
+    """
+    def save(self, entries: list) -> None:
+        values = [val.get() for val in entries]
+        row = {self.columns[column] : values[column] for column in range(len(self.columns))}
+        try:    
+            self.db.add_row(table_name = self.table_name, row=row)
+            self.reload()
+        finally:
+            self.close()
 
     def close(self) -> None:
         self.destroy()
-    
+
+class EditWindow(AddWindow):
+    def __init__(self, item_id: int, row: list, *arg, **kw) -> None:
+        self.item_id: int = item_id
+        self.row: list = row
+        super().__init__(*arg, **kw)
+
+    def fill_entries(self, entry, column) -> None:
+        entry.insert(END, self.row[column])
+
     def save(self, entries: list) -> None:
         values = [val.get() for val in entries]
         row = {self.columns[column] : values[column] for column in range(len(self.columns))}
         try:
-            self.treeview.insert(parent="", text="", values=values)
-            self.db.add_row(table_name = self.table_name, row=row)
-        finally:
-            self.close()
-
-class EditSubwindow(Subwindow):
-    def __init__(self, item_id: int, values: list, *ar, **kw) -> None:
-        self.item_id: int = item_id 
-        self.values: list = values
-        super().__init__(*ar, *kw)
-
-    def build_subwindow(self) -> None:
-        main_frame = tk.Frame(master=self)
-        entries = [tk.Entry(master=main_frame) for _ in range(len(self.columns))]
-        frm_button = tk.Frame(master=main_frame)
-        for column in range(len(self.columns)):
-            lbl_column = tk.Label(master=main_frame, text=self.columns[column])
-            lbl_entry = entries[column]
-            lbl_entry.insert('end', self.values[column])
-            lbl_column.pack(side=tk.TOP)
-            lbl_entry.pack(side=tk.TOP)
-        btn_save = tk.Button(master=frm_button, text="Save", command = lambda: self.save(entries))
-        btn_cancel = tk.Button(master=frm_button, text="Cancel", command = lambda: self.close())
-        btn_save.pack(side=tk.LEFT)
-        btn_cancel.pack(side=tk.LEFT)
-        frm_button.pack(side=tk.TOP, pady=5)
-        main_frame.pack()
-
-    def save(self, entries: list) -> None:
-        vals = [val.get() for val in entries]
-        row = {self.columns[column] : vals[column] for column in range(len(self.columns))}
-        try:
-            self.tv.item(self.item_id, values=vals)
             self.db.update(table_name = self.table_name, row=row)
+            print(f"Added row: {row} to table {self.table_name}")
+            self.reload()
         finally:
             self.close()
 
-class TableGUI():
-    def __init__(self, database: object, table_name: str):
-        self.database: object = database
-        self.table_name: str = table_name
-        self.table_frm: object = tk.Frame()
-        self.treeview: object = ttk.Treeview(master=self.table_frm)
-        self.table_columns: list[tuple(str)] = self.database.fetch_values(table_name)
-        self.init_table()
-    
-    def init_table(self) -> None:
-        self.treeview.bind('<Button-3>', self.do_popup)
-        # self.treeview.bind('<ButtonRelease-1>', self.selectItem)
-        lbl_table_title = tk.Label(master=self.table_frm, text=self.table_name.upper())
-        self.treeview["columns"] = self.table_columns
-        self.treeview.column('#0', anchor=tk.W, width=0, stretch=False)
-        self.treeview.heading('#0', text='', anchor=tk.W)
-        for column in self.treeview["columns"]:
-            self.treeview.column(column, anchor=tk.CENTER, width=110, stretch=False)
-            self.treeview.heading(column, text=column.upper(), anchor=tk.CENTER)
-            index = 0
-            for values in self.database.fetch_table(self.table_name):
-                self.treeview.insert(parent="", index=index, text="", values=values)
-                index += 1
+    def close(self) -> None:
+        self.destroy()
 
-        lbl_table_title.pack()
-        self.treeview.pack(side=tk.LEFT)
-        self.table_frm.pack(side=tk.LEFT)
+class Table(Frame):
+    def __init__(self, name: str, database: object):
+        Frame.__init__(self)
+        self.name: str = name
+        self.db: object = database
+        self.label: Label = Label(master = self, text = self.name.upper()).pack()
+        self.tv: Treeview = Treeview(master = self)
+        self.tv.bind('<Button-3>', self.do_popup)
+        self.columns: list[str] = self.db.fetch_columns(table = self.name)
+        self.build_table()
+    
+    def build_table(self) -> None:
+        self.tv["columns"] = self.columns
+        self.tv.column('#0', anchor=W, width=0, stretch=False)
+        self.tv.heading('#0', text='', anchor=W)
+        for column in self.tv["columns"]:
+            self.tv.column(column, anchor=CENTER, width=110, stretch=False)
+            self.tv.heading(column, text=column.upper(), anchor=CENTER)
+        for row in self.db.fetch_table(self.name):
+            self.tv.insert('', END, values=row)
+
+        self.tv.pack(side=TOP)
+        btn_add_book = Button(   
+                                master = self, 
+                                text = "ADD " + self.name.upper(), 
+                                cursor = "hand2", 
+                                command = lambda: AddWindow(self.db, 
+                                                            self.tv,
+                                                            self.name, 
+                                                            self.columns))
+        btn_add_book.pack(side = BOTTOM, fill = "both")
+        self.pack(side=LEFT)
     
     def do_popup(self, event):
-        menu = tk.Menu(self.table_frm, tearoff=0)
-        item = self.treeview.identify_row(event.y)
-        item_values = self.treeview.item(item)["values"]
-        menu.add_command(label="Delete", command = lambda: self.delete(item))
-        menu.add_command(label="Edit", command = lambda: EditSubwindow  ( 
-                                                                        table_name = self.table_name, 
-                                                                        item_id = item,
-                                                                        values = item_values, 
-                                                                        treeview = self.treeview, 
-                                                                        database = self.database
-                                                                        )
-                        )
+        menu = Menu(self, tearoff=0)
+        item = self.tv.identify_row(event.y)
+        row = self.tv.item(item)["values"]
+        menu.add_command(label="Delete", command = lambda: self.delete(item, row[0]))
+        menu.add_command(   label="Edit", 
+                            command = lambda: EditWindow(   database = self.db, 
+                                                            treeview = self.tv, 
+                                                            table_name = self.name, 
+                                                            item_id = item, 
+                                                            row = row, 
+                                                            columns = self.columns))
         try:
             menu.tk_popup(event.x_root, event.y_root)
         finally:
-            menu.grab_release()
-
-    def delete(self, item: int) -> None:
+            pass
+        
+    def delete(self, item: int, id: int) -> None:
         self.tv.delete(item)
+        self.db.delete(self.name, id)
+        print(f"Deleted row with id {id} from table {self.name}!")
 
-class Client():
-    def __init__(self, database: object) -> None:
-        self.database: object = database
-        self.window = tk.Tk()
-        self.window.title("Library")
-        self.build_database()
-        self.window.mainloop()
+class Client(Tk):
+    def __init__(self, database: object):
+        Tk.__init__(self)
+        self.db: object = database
+        self.table_names: list[str] = self.db.fetch_all_tables()
+        self.tables = []
+        self.title("Library")
+        self.resizable(False, True)
+        self.build_client()
+        self.mainloop()
 
-    def build_database(self) -> None:
-        global_table_titles = []
-        [global_table_titles.append(table_title[0]) for table_title in self.database.fetch_all_tables()]
-
-        tables = {g_table_title: TableGUI(database = self.database, table_name = g_table_title) for g_table_title in global_table_titles}
-
-        btn_frm = tk.Frame(master=self.window)
-        btn_add_book = tk.Button(   
-                                master=btn_frm, 
-                                text="ADD BOOK", 
-                                cursor = "hand2", 
-                                command = lambda: Subwindow(   
-                                                            tables["books"].table_name, 
-                                                            self.database, 
-                                                            tables["books"].treeview
-                                                            )
-                                )
-        btn_add_user = tk.Button(master=btn_frm, text="ADD USER", cursor = "hand2")
-        btn_borrow = tk.Button(master=btn_frm, text="BORROW", cursor = "hand2")
-
-        btn_add_book.pack(side=tk.TOP, fill=tk.BOTH)
-        btn_add_user.pack(side=tk.TOP, fill=tk.BOTH)
-        btn_borrow.pack(side=tk.TOP, fill=tk.BOTH)
-        btn_frm.pack(side=tk.LEFT)
-
-    def delete(self):
-        print(self.selected_item)
-
-
-def main():
-    pass
-    # database.add_books("Mandragora", "Witcher", "Potter")
-    # database.add_users({"John", "Walker"}, {"Milker", "Dilker"}, {"Karol", "Bielski"})
-    # database.borrow(1, 1)
-
-if __name__ == "__main__":
-    main()
+    def build_client(self):
+        self.tables = {table_name : Table(database = self.db, name = table_name) for table_name in self.table_names}
+                            

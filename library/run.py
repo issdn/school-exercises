@@ -1,6 +1,6 @@
-from new_client import Client
+from client import Client
 from database import Database
 
 db = Database()
-# print(db.fetch_all_tables())
+# db.add_schema()
 client = Client(database=db)

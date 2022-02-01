@@ -1,8 +1,7 @@
 import sqlite3 as sql
 
 """
-    I dunno why but this looks bad,
-    however I have no idea how to refactor it better :(
+    Don't how to refactor add_row and update better.
 """
 
 class Database:
@@ -10,11 +9,11 @@ class Database:
         self.db: sql.Connection = sql.connect(db_path)
         self.cur: sql.Cursor = self.db.cursor()
 
-    def add_schema(self, path: str) -> None: 
+    def add_schema(self, path: str = 'schema.sql') -> None: 
         with open(path) as f:
             self.db.executescript(f.read())
 
-    def add_row(self, table_name: str, row: list):
+    def add_row(self, table_name: str, row: dict):
         if table_name == "books":
             self.cur.execute("INSERT INTO books (title) VALUES (?)", (row["title"],))
         if table_name == "users":
@@ -32,6 +31,10 @@ class Database:
             self.cur.execute("UPDATE borrowed SET book_id = ?, user_id = ? WHERE id = ?", (row["book_id"], row["user_id"], row["id"],))
         self.db.commit()
 
+    def delete(self, table_name: str, id: dict) -> None:
+        self.cur.execute(f"DELETE FROM {table_name} WHERE id = ?", (str(id), ))
+        self.db.commit()
+
     def fetch_table(self, table: str) -> list:
         self.cur.execute(f"SELECT * FROM {table}")
         return self.cur.fetchall()
@@ -43,5 +46,3 @@ class Database:
     def fetch_columns(self, table: str) -> list:
         return [column[1] for column in self.db.execute(f"PRAGMA table_info({table})")]
     
-# class Table():
-#     def __init__(self, table_name: str):
