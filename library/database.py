@@ -1,5 +1,6 @@
 import sqlite3 as sql
 from datetime import datetime
+import os
 
 
 class OnEmptyError(Exception):
@@ -35,10 +36,17 @@ def check_date_format(date: str):
 
 
 class Database:
-    def __init__(self, db_path: str = "library"):
+    def __init__(self, db_path: str = "library_db"):
         self.db: sql.Connection = sql.connect(db_path)
+        self.validate()
         self.db.execute("PRAGMA foreign_keys = 1")
         self.cur: sql.Cursor = self.db.cursor()
+
+    def validate(self):
+        if not self.fetch_all_tables():
+            self.add_schema()
+        else:
+            print("Everything OK and READY.")
 
     def add_schema(self, path: str = "schema.sql") -> None:
         with open(path) as f:
@@ -92,3 +100,9 @@ class Database:
 
     def search_table(self, table_name: str, id: str):
         return self.cur.execute(f"SELECT * FROM {table_name} WHERE  id = ?", (str(id)))
+
+    @staticmethod
+    def reset_database(path: str = "library_db"):
+        if os.path.exists("library_db"):
+            os.remove("library_db")
+        open("library_db", "w").close()
