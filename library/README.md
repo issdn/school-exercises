@@ -1,5 +1,7 @@
 # Library
 
-To run: ``python run.py``.
+Run from terminal in root (library) folder:
+``python run.py``.
 
-To run & reset database: ``python run.py -r``.
+With database reset:
+``python run.py -r`` / ``python run.py --Reset`` 
