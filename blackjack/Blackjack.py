@@ -1,5 +1,6 @@
 import random
 import os
+from turtle import pu
 
 
 def clear():
@@ -26,6 +27,13 @@ class Karte:
                 self.punkte = 10
         else:
             self.punkte += int(self.wert)
+
+    def wechseln(self):
+        if self.wert == "A":
+            if self.punkte == 1:
+                self.punkte = 11
+            else:
+                self.punkte = 1
 
     def __str__(self):
         if self.verdeckt:
@@ -110,7 +118,7 @@ class Tisch:
         self.dealer = Dealer()
         self.spiel_starten()
 
-    def stapel_erstellen(self) -> dict:
+    def stapel_erstellen(self, decks: int = 2) -> dict:
         farben = ["Pik", "Blatt", "Herz", "Karo"]
         werte = ["A", "K", "D", "B", "10", "9", "8", "7", "6", "5", "4", "3", "2"]
         self.stapel = [Karte(wert, farbe) for farbe in farben for wert in werte]
@@ -217,13 +225,13 @@ class Tisch:
             x = input("\n[?] ")
             try:
                 if x == "1":
-                    self.ass_punkte_wechseln(asse[0])
+                    asse[0].wechseln()
                 elif x == "2" and asse[1]:
-                    self.ass_punkte_wechseln(asse[1])
+                    asse[1].wechseln()
                 elif x == "3" and asse[2]:
-                    self.ass_punkte_wechseln(asse[2])
+                    asse[2].wechseln()
                 elif x == "4" and asse[3]:
-                    self.ass_punkte_wechseln(asse[3])
+                    asse[3].wechseln()
                 elif x == "9":
                     fertig = True
                 else:
@@ -233,17 +241,11 @@ class Tisch:
             except IndexError:
                 self.asse_behandeln(asse, True, f"Du hast nur {len(asse)} Asse!\n")
 
-    def ass_punkte_wechseln(self, ass: object):
-        if ass.punkte == 11:
-            ass.punkte = 1
-        else:
-            ass.punkte = 11
-
     def karten_fur_erste_runde_geben(self) -> None:
         self.karte_geben(self.spieler, verdeckt=False)
-        self.test_karte_geben(self.dealer)
+        self.karte_geben(self.dealer, verdeckt=True)
         self.karte_geben(self.spieler, verdeckt=False)
-        self.test_karte_geben(self.dealer)
+        self.karte_geben(self.dealer, verdeckt=True)
 
     def test_karte_geben(self, spieler):
         karte = Karte(wert="A", farbe="Karo")
@@ -262,31 +264,39 @@ class Tisch:
 
     def _dealer_ai(self):
         fertig = False
-        punkte = self.dealer.punkte_auf_der_hand()
         asse = self.dealer.asse_listen()
-        ass_werte = [11 for ass in asse]
         while not fertig:
-            if punkte > 13 and not asse:
+            punkte = self.dealer.punkte_auf_der_hand()
+            if punkte > 13:
+                # print("Punkte uber 13. Fertig. Punkte: %d" % punkte)
                 fertig = True
+            elif asse and punkte <= 10:
+                for ass in asse:
+                    if punkte <= 10 and ass.punkte == 1:
+                        ass.wechseln()
+                        # print(
+                        #     "Punkte unter 10, ass wechseln. Punkte %d"
+                        #     % self.dealer.punkte_auf_der_hand()
+                        # )
+                        punkte = self.dealer.punkte_auf_der_hand()
+                    elif punkte > 21 and ass.punkte == 11:
+                        ass.wechseln()
+                        # print(
+                        #     "Punkte uber 21. Ass wechseln. Punkte: %d"
+                        #     % self.dealer.punkte_auf_der_hand()
+                        # )
+                        punkte = self.dealer.punkte_auf_der_hand()
             elif punkte <= 13:
-                if not asse:
-                    self.karte_geben(self.dealer, True)
-                else:
-                    hoehste_zahl = self.dealer.punkte_auf_der_hand()
-                    for ass_wert, ass in enumerate(asse):
-                        if (punkte + ass_werte[ass_wert]) <= 21 and (
-                            punkte + ass_werte[ass_wert]
-                        ) > hoehste_zahl:
-                            self.ass_punkte_wechseln(ass)
-                            punkte = self.dealer.punkte_auf_der_hand()
-                            if ass_werte[ass_wert] == 1:
-                                ass_werte[ass_wert] = 11
-                            else:
-                                ass_werte[ass_wert] = 1
-                            hoehste_zahl = self.dealer.punkte_auf_der_hand()
-                        elif punkte > 21:
-                            self.ass_punkte_wechseln(ass)
-                            punkte = self.dealer.punkte_auf_der_hand()
+                self.karte_geben(self.dealer, True)
+                # print(
+                #     "Punkte unter 14, Karte ziehen. Punkte: %d"
+                #     % self.dealer.punkte_auf_der_hand()
+                # )
 
 
-tisch = Tisch()
+def main() -> None:
+    Tisch()
+
+
+if __name__ == "__main__":
+    main()
