@@ -3,7 +3,7 @@ import os
 from turtle import pu
 
 
-def clear():
+def clear() -> None:
     command = "clear"
     if os.name in ("nt", "dos"):
         command = "cls"
@@ -113,9 +113,9 @@ class Spieler(Dealer):
 class Tisch:
     def __init__(self) -> None:
         self.stapel: list = []
-        self.naechste_runde = True
-        self.spieler = Spieler()
-        self.dealer = Dealer()
+        self.naechste_runde: bool = True
+        self.spieler: object = Spieler()
+        self.dealer: object = Dealer()
         self.spiel_starten()
 
     def stapel_erstellen(self, decks: int = 2) -> dict:
@@ -178,7 +178,7 @@ class Tisch:
                 errors.append("Eingabe nur in Zahlen aus der Liste!")
                 continue
 
-    def gewinner_ermitteln_und_auszahlen(self):
+    def gewinner_ermitteln_und_auszahlen(self) -> None:
         self._dealer_ai()
         print()
         spieler_p = self.spieler.punkte_auf_der_hand()
@@ -210,7 +210,7 @@ class Tisch:
         ende = input("\n[ENTER]")
         self.spiel_starten()
 
-    def asse_behandeln(self, asse: list, error=False, error_msg=""):
+    def asse_behandeln(self, asse: list, error=False, error_msg="") -> None:
         fertig = False
         while not fertig:
             clear()
@@ -247,7 +247,7 @@ class Tisch:
         self.karte_geben(self.spieler, verdeckt=False)
         self.karte_geben(self.dealer, verdeckt=True)
 
-    def test_karte_geben(self, spieler):
+    def test_karte_geben(self, spieler) -> None:
         karte = Karte(wert="A", farbe="Karo")
         spieler.hand.append(karte)
 
@@ -262,7 +262,7 @@ class Tisch:
         else:
             print(f"[ {karte.farbe} {karte.wert} ]")
 
-    def _dealer_ai(self):
+    def _dealer_ai(self) -> None:
         fertig = False
         asse = self.dealer.asse_listen()
         while not fertig:
