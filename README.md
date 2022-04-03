@@ -14,6 +14,6 @@ None of them are complete but if you want to use them, you are free to do so.
 - **library:** A library with interface in tkinter and data managment in sqlite where you can add/delete users and books and borrow the books to users.
 - **blackjack:** Console version of blackjack.
 - **wod_bot:** Fishing bot for an old browser game WoD using OpenCV and Pyautogui.
--**bmp_daten:** Reads bitmap header data.
--**cd_programm:** Tkitner/Sqlite3 CD app.
--**mp3reader:** Reads/overwrites mp3 binary metadata. 
+- **bmp_daten:** Reads bitmap header data.
+- **cd_programm:** Tkitner/Sqlite3 CD app.
+- **mp3reader:** Reads/overwrites mp3 binary metadata. 
