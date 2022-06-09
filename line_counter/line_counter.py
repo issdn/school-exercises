@@ -1,7 +1,7 @@
 import os
 from os.path import isfile, isdir, join
 
-md_path = f"{os.environ['ReadmeDir']}\README.md"
+md_path = f"{os.getenv('ReadmeDir')}\README.md"
 path = "..\\"
 ignore = [".git", "env", "__pycache__", ".vscode"]
 allowed_extensions = ["py", "js", "ts", "tsx", "ps1"]
@@ -21,7 +21,10 @@ def tree(path=path):
 tree()
 
 lines = sum(
-    1 for file in files for line in open(file, encoding="utf-8").read() if len(line)
+    1
+    for file in files
+    for line in open(file, encoding="utf-8").readlines()
+    if line != "\n"
 )
 
 readme = f"""
@@ -32,4 +35,5 @@ readme = f"""
 
 with open(md_path, "w+", encoding="utf-8") as md:
     md.write(readme)
-    print("----README UPDATED----\n", md.read())
+    print("----README UPDATED----")
+    print(md.read())
