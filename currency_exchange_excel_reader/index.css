@@ -1,0 +1,183 @@
+@font-face {
+    font-family: "Montserrat";
+    src: url("./fonts/montserrat.woff") format("woff");
+    src: url("./fonts/montserrat.ttf") format("truetype");
+    src: url("./fonts/montserrat.woff2") format("woff2");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("./fonts/montserrat-regular.wofff") format("woff");
+    src: url("./fonts/montserrat-regular.otf") format("truetype");
+    src: url("./fonts/montserrat-regular.woff2") format("woff2");
+    font-weight: regular;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    height: 100%;
+    font-family:"Montserrat", Helvetica, Arial, sans-serif;
+    padding: 5% 15% 0 15%;
+
+    background: linear-gradient(270deg, #c89f9c, #eed7c5, #eee2df, #c97c5d, #b36a5e);
+    background-size: 800% 800%;
+    -webkit-animation: BackgroundAnimation 30s ease infinite;
+    -moz-animation: BackgroundAnimation 30s ease infinite;
+    animation: BackgroundAnimation 30s ease infinite;
+
+}
+
+#top{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    min-height: 500px;
+    margin-bottom: 30px;
+}
+
+#exchange-rates{
+    border: 1px solid black;
+    padding: 15px;
+    overflow-y: scroll;
+    max-height: 500px;
+    width:45%;
+    min-width: 250px;
+    box-sizing: border-box;
+}
+
+#label-container{
+    width: 100%;
+    border-bottom: 1px solid black;
+}
+
+label{
+    font-size: 25px;
+    font-weight: 1000;
+}
+
+table{
+    width: 100%; height: 100%;
+}
+
+tbody{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#date{
+    font-size: 20px;
+    margin-bottom: 10px;
+    cursor: unset;
+}
+
+tr{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.tr-activated{
+    background-color: rgba(0,0,0,0.3);
+}
+
+tr:not(#date):hover{
+   background: rgba(0,0,0,0.3);
+}
+
+th, td{
+    text-transform: uppercase;
+    font-weight: regular;
+    pointer-events: none;
+}
+
+#buttons{
+    width:45%;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+select, button, #excel-file-input-label{
+    width: 100%;
+    height: 30px;
+    cursor: pointer;
+    font-size: 20px;
+    background-color: transparent;
+    border: 1px solid black;
+    font-family:"Montserrat", Helvetica, Arial, sans-serif;
+    outline: none;
+    text-align: center;
+}
+
+select{
+    margin-bottom: 10px;
+}
+
+#excel-file-input-label{
+    margin-bottom: 5px;
+    box-sizing:border-box;
+    padding-top: 5px;
+    font-weight: normal !important;
+}
+
+#excel-file-input{
+    display: none;
+}
+
+#chart-container{
+    width: 100%; height: 300px;
+}
+
+
+@media only screen and (max-width: 1000px) {
+    body {
+        padding: 0;
+    }
+}
+
+@media only screen and (max-width: 660px) {
+    
+    #top {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    #exchange-rates{
+        margin-bottom: 30px;
+        width: 100%;
+    }
+
+    #buttons{
+        width: 100%;
+    }
+
+}
+
+@-webkit-keyframes BackgroundAnimation {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@-moz-keyframes BackgroundAnimation {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes BackgroundAnimation {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}

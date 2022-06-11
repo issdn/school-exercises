@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="./index.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div id="top">
+      <div id="exchange-rates">
+        <table id="exchange-rates-table">
+          <div id="label-container">
+            <label>Kurs walut</label>
+          </div>
+          <tbody id="exchange-rates-tbody"></tbody>
+        </table>
+      </div>
+      <div id="buttons">
+        <form id="file-input-form">
+          <label id="excel-file-input-label" for="excel-file-input">
+            Wybierz plik excel
+            <input
+              type="file"
+              id="excel-file-input"
+              name="excel-file-input"
+              accept=".xlsx, .xls"
+            />
+          </label>
+          <button type="submit">Zmien plik</button>
+        </form>
+        <form id="exchange-rates-form">
+          <select id="currencies"></select>
+          <button type="submit">Zmien date</button>
+        </form>
+      </div>
+    </div>
+    <div id="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
+    <script src="./graph.js"></script>
+    <script src="./parser.js"></script>
+  </body>
+</html>
