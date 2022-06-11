@@ -241,6 +241,31 @@ class XLSXParser {
 let xlsxParser = undefined;
 const tableBody = document.getElementById("exchange-rates-tbody");
 const ratesForm = document.getElementById("exchange-rates-form");
+const fileInput = document.getElementById("excel-file-input");
+
+fileInput.addEventListener("input", (e) => {
+  const invalid = document.getElementById("invalid-file");
+  invalid.style.display = "none";
+  invalid.innerHTML = "";
+  const valid = document.getElementById("added-file");
+  valid.style.display = "none";
+  valid.innerHTML = "";
+  const fileFormat = e.target.files[0].name.split(".").pop();
+
+  if (fileFormat === "xlsx" || fileFormat === "xls") {
+    document.getElementById("add-file-button").disabled = false;
+    valid.style.display = "block";
+    valid.appendChild(
+      document.createTextNode("Dodano: " + e.target.files[0].name)
+    );
+  } else {
+    invalid.style.display = "block";
+    invalid.appendChild(
+      document.createTextNode("Niepoprawny plik: " + e.target.files[0].name)
+    );
+    document.getElementById("add-file-button").disabled = true;
+  }
+});
 
 // Po wybraniu daty z dropdown menu wywoluje funkcje updateExchangeRatesTable ktora tworzy tabele z wybranej daty.
 ratesForm.addEventListener("submit", (e) => {

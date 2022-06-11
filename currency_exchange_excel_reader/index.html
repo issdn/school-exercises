@@ -19,16 +19,20 @@
       </div>
       <div id="buttons">
         <form id="file-input-form">
-          <label id="excel-file-input-label" for="excel-file-input">
-            Wybierz plik excel
-            <input
-              type="file"
-              id="excel-file-input"
-              name="excel-file-input"
-              accept=".xlsx, .xls"
-            />
-          </label>
-          <button type="submit">Zmien plik</button>
+          <div id="file-input-container">
+            <label id="excel-file-input-label" for="excel-file-input">
+              Wybierz plik excel
+              <input
+                type="file"
+                id="excel-file-input"
+                name="excel-file-input"
+                accept=".xlsx,.xls"
+              />
+            </label>
+            <p id="invalid-file"></p>
+            <p id="added-file"></p>
+          </div>
+          <button id="add-file-button" type="submit">Zmien plik</button>
         </form>
         <form id="exchange-rates-form">
           <select id="currencies"></select>

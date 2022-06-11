@@ -5,5 +5,6 @@ Set-Location $Env:ReadmeDir
 git add .
 $randCommitMess = Get-Random
 git commit -m "$randCommitMess"
-git push origin main
+# Master or any name of the banch.
+git push origin master
 Set-Location $currLocation
