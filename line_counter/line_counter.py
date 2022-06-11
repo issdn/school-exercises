@@ -46,9 +46,9 @@ letters = sum(
 
 readme = f"""
 👋 Hi, I'm **Karol**!\n
-📌 I currently have **{len(projects)}** small projects in my *\\school-exercises* repository!\n
+📌 I currently have **{len(projects)}** small projects in my *\\tiny-projects* repository!\n
 🧩 That's **{len(files)}** files, **{lines}** lines, **{letters}** letters and **{size}** bytes of code!\n
-🤖 This was generated automatically by the code which you can find in *\\school-exercises\\line_counter*.
+🤖 This was generated automatically by the code which you can find in *\\tiny-projects\\line_counter*.
 """
 
 with open(md_path, "w", encoding="utf-8") as md:
