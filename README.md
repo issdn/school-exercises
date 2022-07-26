@@ -3,6 +3,8 @@
 Small projects and school exercises that I got and added more functionality.
 None of them are complete but if you want to use them, you are free to do so.
 
+# [Video overview](https://youtu.be/U2dGGabWTYY)
+
 # Small overview
 
 - **fitness_studio:** App for storing data for your fitness studio. Has courses and customers. Topic was learning dictionaries.

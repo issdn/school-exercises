@@ -1,0 +1,12 @@
+Bibliothek
+files:ts=15,py=1,html=1,tsx=26
+lines:ts=659,py=43,html=4,tsx=1083
+letters:ts=13157,py=1267,html=48,tsx=22357
+tiny-projects
+files:js=5,py=34,ps1=1,html=2,css=1
+lines:js=457,py=2290,ps1=10,html=9,css=175
+letters:js=11274,py=55523,ps1=233,html=48,css=3004
+issdn-website
+files:js=4,py=6,html=1,css=1,svelte=10
+lines:js=35,py=108,html=5,css=30,svelte=105
+letters:js=600,py=1958,html=35,css=419,svelte=1171

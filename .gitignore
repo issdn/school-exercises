@@ -2,3 +2,5 @@ __pycache__/
 env/
 .vscode/
 *.deprecated
+node_modules/
+package-lock.json

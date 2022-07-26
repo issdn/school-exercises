@@ -56,8 +56,10 @@ subgrids = [
 
 """
 
+
 class GridError(Exception):
     pass
+
 
 class Sudoku:
     def __init__(self, gameGrid):
@@ -71,10 +73,10 @@ class Sudoku:
 
     def generate_grid(self) -> None:
         for _ in range(random.randint(17, 41)):
-            y, x = random.randint(0,8), random.randint(0,8)
-            number = random.randint(1,9)
+            y, x = random.randint(0, 8), random.randint(0, 8)
+            number = random.randint(1, 9)
             try:
-                self.validate_and_insert(number=number, y=y, x=x)
+                self.validate(number=number, y=y, x=x)
             except GridError:
                 _ -= 1
 
@@ -85,17 +87,20 @@ class Sudoku:
         print("\t-----------------------------\n")
 
         for i in self.gameGrid:
-            print(" ", iterator,' |  ', end="")
+            print(" ", iterator, " |  ", end="")
             row_iter: int = 0
             for j in i:
                 print(f"{j}  ", end="")
-                if (row_iter+1) % 3 == 0: print("  ", end="")
-                row_iter+=1
+                if (row_iter + 1) % 3 == 0:
+                    print("  ", end="")
+                row_iter += 1
 
-            if (iterator+1) % 3 == 0: print('\n')
-            else: print()
+            if (iterator + 1) % 3 == 0:
+                print("\n")
+            else:
+                print()
 
-            iterator+=1
+            iterator += 1
 
     def user_control(self) -> None:
         number = int(input("[>] Wähle eine Zahl: "))
@@ -113,15 +118,15 @@ class Sudoku:
         self.user_control()
 
     def check_state(self) -> None:
-        if 'x' not in self._flatten(self.gameGrid):
+        if "x" not in self._flatten(self.gameGrid):
             command = input("[?] Das Spielfeld is voll. Überprüfen? [y/n]: ")
             if command == "y" or command == "yes":
-               if self.validate_all():
+                if self.validate_all():
                     print("[✓] Gewonnen!")
                     exit()
             elif command == "n" or command == "no":
                 self.user_control()
-    
+
     def validate_all(self) -> bool:
         for i in range(9):
             if not self._is_unique(self.gameGrid[i]):
@@ -134,44 +139,49 @@ class Sudoku:
                 print(f"[x] Doppelte Zahl in Subgrid {i}!")
                 return False
         return True
-                    
+
     def validate(self, number: int, y: int, x: int) -> None:
         if self.validate_subgrid(number=number, y=y, x=x):
             if self.validate_row(number=number, y=y):
-                if self.validate_column(number=number, x=x, column=self._get_column(x=x, grid=self.gameGrid)):
+                if self.validate_column(
+                    number=number, x=x, column=self._get_column(x=x, grid=self.gameGrid)
+                ):
                     self.insert(number=number, y=y, x=x)
-    
+
     def insert(self, number: int, y: int, x: int) -> None:
         if (number > 9 or number < 1) or (y > 8 or y < 0) or (x > 8 or x < 0):
             raise GridError("[x] Falsche Stelle oder Zahl! Zahlen 1 - 9, Stellen 0 - 8")
         self.gameGrid[y][x] = number
-                        
+
     def _is_unique(self, lst: list) -> bool:
-        if len(lst) > len(set(lst)): return False
+        if len(lst) > len(set(lst)):
+            return False
         return True
 
-    def get_absolute_index(self, y: int, x:int, grid: list) -> int:
+    def get_absolute_index(self, y: int, x: int, grid: list) -> int:
         grid = self._flatten(grid)
         if y != 0:
-            index = (y-1)*8 + x
+            index = (y - 1) * 8 + x
         else:
             index = x
         return index
 
-    def validate_subgrid(self, number: int, y: int, x:int) -> bool:
+    def validate_subgrid(self, number: int, y: int, x: int) -> bool:
         absolute_index = self.get_absolute_index(y=y, x=x, grid=self.gameGrid)
-        subgrid_number = (absolute_index % 9)//3+3*(absolute_index//27)
+        subgrid_number = (absolute_index % 9) // 3 + 3 * (absolute_index // 27)
         subgrids = self._get_subgrids(grid=self.gameGrid)
         if number in subgrids[subgrid_number]:
             return False
         return True
 
     def validate_row(self, number: int, y: int) -> bool:
-        if number in self.gameGrid[y]: return False 
+        if number in self.gameGrid[y]:
+            return False
         return True
 
     def validate_column(self, number: int, x: int, column: list) -> bool:
-        if number in column: return False
+        if number in column:
+            return False
         return True
 
     def _get_column(self, x: int, grid: list) -> list:
@@ -181,16 +191,16 @@ class Sudoku:
 
     def _get_subgrids(self, grid: list) -> list:
         chunks: list = self._to_chunks(grid=grid)
-        
+
         flattened: list = self._flatten(grid=chunks)
-        
+
         subgrids: list = []
         start, end = 0, 3
         for _ in range(3):
             for j in range(start, end):
-                subgrids.append(flattened[j] + flattened[j+3] + flattened[j+6])
-            start, end = start+9, end+9 
-        
+                subgrids.append(flattened[j] + flattened[j + 3] + flattened[j + 6])
+            start, end = start + 9, end + 9
+
         return subgrids
 
     def _flatten(self, grid: list) -> list:
