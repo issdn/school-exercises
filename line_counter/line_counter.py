@@ -3,8 +3,10 @@ from os.path import isfile, isdir, join
 
 md_path = f"{os.getenv('ReadmeDir')}\README.md"
 path = "..\\"
-ignore = [".git", "env", "__pycache__", ".vscode"]
-allowed_extensions = ["py", "js", "ts", "tsx", "ps1"]
+# [".git", "env", "__pycache__", ".vscode"]
+ignore = [".obsidian"]
+# ["py", "js", "ts", "tsx", "ps1"]
+allowed_extensions = ["md"]
 
 projects = [
     directory
@@ -51,6 +53,6 @@ readme = f"""
 🤖 This was generated automatically by the code which you can find in *\\tiny-projects\\line_counter*.
 """
 
-with open(md_path, "w", encoding="utf-8") as md:
-    md.write(readme)
-    print("----README UPDATED----")
+# with open(md_path, "w", encoding="utf-8") as md:
+#     md.write(readme)
+#     print("----README UPDATED----")
