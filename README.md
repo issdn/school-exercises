@@ -20,3 +20,4 @@ None of them are complete but if you want to use them, you are free to do so.
 - **cd_programm:** Tkitner/Sqlite3 CD app.
 - **mp3reader:** Reads/overwrites mp3 binary metadata.
 - **minirpg:** Text rpg.
+- **housetemps:** Embedded project gathering temperature and humidity using DHT11 and sending it with nodemcu to a dashboard built with asp.net, mysql and react.
