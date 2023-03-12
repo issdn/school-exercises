@@ -1,6 +1,0 @@
-class Item:
-    ...
-
-
-class Spell:
-    ...
